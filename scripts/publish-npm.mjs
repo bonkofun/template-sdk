@@ -7,7 +7,7 @@ const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 assert.equal(pkg.publishConfig?.access, 'public');
 assert.equal(pkg.publishConfig?.registry, 'https://registry.npmjs.org/');
 assert(!pkg.private, 'Private packages cannot be published');
-const archive = `artifacts/${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
+const archive = `./artifacts/${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
 const integrity = `sha512-${createHash('sha512').update(readFileSync(archive)).digest('base64')}`;
 const registry = '--registry=https://registry.npmjs.org/';
 const result = spawnSync('npm', ['view', `${pkg.name}@${pkg.version}`, 'dist.integrity', '--json', registry], { encoding: 'utf8' });

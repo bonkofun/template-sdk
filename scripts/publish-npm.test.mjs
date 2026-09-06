@@ -16,7 +16,7 @@ beforeEach(() => {
 });
 test('publishes only the verified archive using the appropriate dist-tag', async () => {
   await import('./publish-npm.mjs');
-  expect(mocks.execFileSync).toHaveBeenCalledWith('npm', ['publish', 'artifacts/bonko-template-sdk-0.2.2.tgz', '--access', 'public', '--tag', 'latest', '--registry=https://registry.npmjs.org/'], { stdio: 'inherit' });
+  expect(mocks.execFileSync).toHaveBeenCalledWith('npm', ['publish', './artifacts/bonko-template-sdk-0.2.2.tgz', '--access', 'public', '--tag', 'latest', '--registry=https://registry.npmjs.org/'], { stdio: 'inherit' });
 });
 test('prereleases use next', async () => {
   version = '0.3.0-rc.1';
