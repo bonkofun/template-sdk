@@ -2,7 +2,6 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -41,22 +40,3 @@ jobs:
           path: artifacts/
           if-no-files-found: error
           retention-days: 14
-  release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: verify
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    steps:
-      - name: Download verified artifact and create release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: |
-          gh run download "$RUN_ID" --name sdk-package --dir artifacts
-          cd artifacts
-          sha256sum --check SHA256SUMS
-          gh release create "$RELEASE_TAG" *.tgz SHA256SUMS --verify-tag --title "SDK $RELEASE_TAG" --generate-notes

@@ -1,0 +1,94 @@
+name: GitHub Release
+
+run-name: Release ${{ inputs.release_tag || github.ref_name }}
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing SemVer tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Verify SDK and publish release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+
+    steps:
+      - name: Validate release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          semver_pattern='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$'
+          if [[ ! "${RELEASE_TAG}" =~ ${semver_pattern} ]]; then
+            echo "Expected vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-prerelease." >&2
+            exit 1
+          fi
+      - name: Check out the tagged source and release history
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pinned pnpm
+        uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288 # v5
+        with:
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Require the tag to match the package version
+        run: node --input-type=module -e 'import {readFileSync} from "node:fs"; import assert from "node:assert/strict"; const p=JSON.parse(readFileSync("package.json","utf8")); assert.equal(process.env.RELEASE_TAG, `v${p.version}`, "Tag must match package.json version");'
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck, test, build and verify the package
+        run: |
+          pnpm typecheck
+          pnpm test
+          pnpm build
+          pnpm package:check
+      - name: Generate detailed release notes from commits
+        run: node scripts/generate-release-notes.mjs --tag "$RELEASE_TAG" --repository "$GITHUB_REPOSITORY" --output "$RUNNER_TEMP/release-notes.md"
+      - name: Build the release archive and checksum
+        run: |
+          pnpm pack --pack-destination artifacts
+          cd artifacts
+          sha256sum *.tgz > SHA256SUMS
+          sha256sum --check SHA256SUMS
+          cd ..
+          git diff --check
+          git diff --exit-code
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_flags=()
+          if [[ "${RELEASE_TAG}" == *-* ]]; then
+            release_flags+=(--prerelease)
+          fi
+          gh release create "${RELEASE_TAG}" artifacts/*.tgz artifacts/SHA256SUMS \
+            --repo "${GITHUB_REPOSITORY}" \
+            --verify-tag \
+            --title "${RELEASE_TAG}" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            "${release_flags[@]}"
