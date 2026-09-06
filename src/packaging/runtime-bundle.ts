@@ -5,8 +5,8 @@ import {
   validateMedia,
   writeZip,
 } from "./node.js";
-import { parseTemplateSubmission } from "./submission.js";
-import { validateRuntimeSource } from "./runtime-document.js";
+import { parseTemplateSubmission } from "../protocol/submission.js";
+import { validateRuntimeSource } from "../gateway/runtime-document.js";
 
 const decoder = new TextDecoder("utf-8", { fatal: true });
 const isRecord = (value: unknown): value is Record<string, unknown> =>

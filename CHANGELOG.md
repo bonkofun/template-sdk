@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3
+
+- Organize source and colocated tests into protocol, runtime, React, gateway, and packaging modules.
+- Preserve all public package import paths and v3 protocol compatibility.
+- Clean build output before compilation to prevent obsolete files in release packages.
+- Ship the concise README and MIT license in the npm distribution.
+
 ## 0.2.2
 
 - Enable public npm distribution and direct installation of `@bonko/template-sdk`.

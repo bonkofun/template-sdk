@@ -5,8 +5,8 @@ import {
   parseTemplateSubmission,
   RUNTIME_SDK_VERSION,
 } from "./submission.js";
-import { inspectRuntimeBundle, packRuntimeBundle } from "./runtime-bundle.js";
-import { writeZip } from "./node.js";
+import { inspectRuntimeBundle, packRuntimeBundle } from "../packaging/runtime-bundle.js";
+import { writeZip } from "../packaging/node.js";
 
 function manifest() {
   return {

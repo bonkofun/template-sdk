@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { inflateRawSync } from "node:zlib";
-import { LIMITS, SDK_VERSION } from "./protocol.js";
-import { parseTemplateManifest } from "./template.js";
-import type { Template } from "./types.js";
+import { LIMITS, SDK_VERSION } from "../protocol/protocol.js";
+import { parseTemplateManifest } from "../protocol/template.js";
+import type { Template } from "../protocol/types.js";
 
 export const sha256 = (data: Uint8Array | string) =>
   createHash("sha256").update(data).digest("hex");

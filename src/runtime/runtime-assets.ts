@@ -1,6 +1,6 @@
-import { LIMITS } from "./protocol.js";
-import { validateRuntimeContent, type RuntimeContent } from "./runtime-messages.js";
-import type { RuntimeFrameData } from "./runtime-react.js";
+import { LIMITS } from "../protocol/protocol.js";
+import { validateRuntimeContent, type RuntimeContent } from "../protocol/runtime-messages.js";
+import type { RuntimeFrameData } from "../react/runtime-react.js";
 
 export interface RuntimeAssetSource {
   /** URL is resolved by trusted host code, never supplied by template code. */

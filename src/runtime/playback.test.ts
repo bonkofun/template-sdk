@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { Playback } from "./playback.js";
-import { readZip, writeZip, safePath, filesDigest } from "./node.js";
+import { readZip, writeZip, safePath, filesDigest } from "../packaging/node.js";
 function clock() {
   let now = 0;
   const change = vi.fn();
