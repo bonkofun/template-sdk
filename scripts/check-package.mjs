@@ -10,7 +10,10 @@ if (process.env.GITHUB_REF_TYPE === 'tag') {
 }
 const staging = mkdtempSync(join(tmpdir(), 'bonko-sdk-package-'));
 try {
-  execFileSync('corepack', ['pnpm', 'pack', '--pack-destination', staging], { stdio: 'inherit' });
+  // Reuse the pnpm CLI that started this script; do not invoke bundled Corepack.
+  assert(process.env.npm_execpath && process.env.npm_config_user_agent?.startsWith('pnpm/'),
+    'Run this check with pnpm package:check');
+  execFileSync(process.execPath, [process.env.npm_execpath, 'pack', '--pack-destination', staging], { stdio: 'inherit' });
   const archive = join(staging, `bonko-template-sdk-${pkg.version}.tgz`);
   const listing = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' }).trim().split('\n');
   assert(listing.every(name => /^package\/(dist\/|package.json$|README.md$|CHANGELOG.md$|LICENSE)/.test(name)), 'Unexpected package content');

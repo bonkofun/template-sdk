@@ -36,12 +36,13 @@ The SDK contains no application pages, database access, account management, stor
 ```bash
 git clone https://github.com/bonkofun/template-sdk.git template-sdk
 cd template-sdk
-corepack pnpm install --frozen-lockfile
-corepack pnpm typecheck
-corepack pnpm test
-corepack pnpm build
-corepack pnpm package:check
-corepack pnpm pack --pack-destination artifacts
+npm install --global pnpm@10.30.3
+pnpm install --frozen-lockfile
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm package:check
+pnpm pack --pack-destination artifacts
 ```
 
 The current archive is `artifacts/bonko-template-sdk-0.2.1.tgz`. It contains compiled JavaScript, TypeScript declarations, package metadata, and this README. Tests, source directories, credentials, and node_modules are excluded. Build output and archives are ignored by Git.
@@ -98,7 +99,7 @@ Actions are pinned to commit SHAs. CI has read-only repository permissions; the 
 For the first independent release, the current version is `0.2.1`. For a subsequent compatible patch, update the version explicitly:
 
 ```bash
-corepack pnpm version 0.2.2 --no-git-tag-version
+pnpm version 0.2.2 --no-git-tag-version
 ```
 
 Update `CHANGELOG.md`, the README version references, and relevant tests. Change protocol identifiers only when the compatibility contract changes. Use English Conventional Commits so generated release notes remain readable and categorized.
@@ -190,6 +191,7 @@ Consumers do not automatically follow main, latest, or a newly published SDK rel
 | Tag/version mismatch | Prepare a commit with the intended package version and publish its matching tag |
 | Tag cannot be checked out | Push the existing local tag before using manual publication |
 | Permission error during publication | Check repository/organization Actions policies and the job's `contents: write` permission |
+| Bundled Corepack reports `Cannot find matching keyid` | Install the pinned pnpm directly with `npm install --global pnpm@10.30.3`; package checks reuse the active pnpm CLI and do not invoke Corepack |
 | Tests or package checks fail | Resolve the failure before publishing; no successful release is claimed by a failed workflow |
 | Release already exists | Keep existing assets intact; use a new version for changes |
 | Checksum mismatch | Discard the download and investigate the release assets before upgrading a consumer |
