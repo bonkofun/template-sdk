@@ -27,6 +27,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      id-token: write
     env:
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
 
@@ -53,8 +54,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version-file: .nvmrc
+          node-version: 22.14.0
           cache: pnpm
+      - name: Install pinned npm with trusted publishing support
+        run: npm install --global npm@11.14.0
       - name: Require the tag to match the package version
         run: node --input-type=module -e 'import {readFileSync} from "node:fs"; import assert from "node:assert/strict"; const p=JSON.parse(readFileSync("package.json","utf8")); assert.equal(process.env.RELEASE_TAG, `v${p.version}`, "Tag must match package.json version");'
       - name: Install locked dependencies
@@ -76,6 +79,8 @@ jobs:
           cd ..
           git diff --check
           git diff --exit-code
+      - name: Publish the verified archive to npm
+        run: node scripts/publish-npm.mjs
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
