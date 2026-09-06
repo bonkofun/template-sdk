@@ -58,3 +58,7 @@ The client requires a Bonko host iframe; it does not run as a standalone page. U
 | `@bonko/template-sdk/runtime-gateway` | Isolated runtime gateway |
 
 SDK **0.2.2** supports Template Protocol **v3** with manifest `sdkVersion: "0.2.0"`.
+
+## License
+
+[MIT](LICENSE) © 2026 Bonko contributors.

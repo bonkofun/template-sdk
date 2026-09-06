@@ -30,7 +30,7 @@
     "motion": "13.1.1"
   },
   "description": "Shared versioned SDK for Bonko template authoring, validation and isolated browser runtime.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bonkofun/template-sdk.git"
