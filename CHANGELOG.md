@@ -2,6 +2,8 @@
 
 ## 0.2.1
 
+- Reuse the active pnpm CLI during package checks to avoid the older Corepack bundled with Node.js 22.12.0.
+
 - Move the SDK source and its 151 tests into an independent repository.
 - Include the main-site optional RuntimeFrame loading placeholder that was absent
   from the Studio 0.2.0 distribution. No implementation changes during extraction.
