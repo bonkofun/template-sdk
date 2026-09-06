@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AudioScope } from "./audio.js";
-import { RuntimeHost } from "./runtime-host.js";
-import { parseRuntimeOrigins } from "./runtime-gateway.js";
-import { validateRuntimeContent, type HostEnvelope, type RuntimeContent, type StaticReason } from "./runtime-messages.js";
-import type { CompletionReason, PlaybackState } from "./protocol.js";
+import { AudioScope } from "../runtime/audio.js";
+import { RuntimeHost } from "../runtime/runtime-host.js";
+import { parseRuntimeOrigins } from "../gateway/runtime-gateway.js";
+import { validateRuntimeContent, type HostEnvelope, type RuntimeContent, type StaticReason } from "../protocol/runtime-messages.js";
+import type { CompletionReason, PlaybackState } from "../protocol/protocol.js";
 
 export interface RuntimeFrameData {
   content: RuntimeContent;

@@ -1,4 +1,4 @@
-import type { Content, Controls, PlaybackState } from "./protocol.js";
+import type { Content, Controls, PlaybackState } from "../protocol/protocol.js";
 import {
   RUNTIME_CHANNEL_PATTERN,
   STATIC_REASONS,
@@ -6,7 +6,7 @@ import {
   validateRuntimeContent,
   type FrameRequest,
   type RuntimeContent,
-} from "./runtime-messages.js";
+} from "../protocol/runtime-messages.js";
 
 export interface RuntimePresentation {
   content: Content;

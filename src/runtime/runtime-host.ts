@@ -1,7 +1,7 @@
 import { Playback } from "./playback.js";
-import { RuntimeMessageGate, type HostEnvelope, type StaticReason } from "./runtime-messages.js";
+import { RuntimeMessageGate, type HostEnvelope, type StaticReason } from "../protocol/runtime-messages.js";
 import type { AudioScope } from "./audio.js";
-import type { CompletionReason } from "./protocol.js";
+import type { CompletionReason } from "../protocol/protocol.js";
 
 export const STATIC_COMMIT_MS = 5_000;
 

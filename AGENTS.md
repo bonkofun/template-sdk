@@ -24,3 +24,11 @@ Commit only requested changes. Publish releases only when authorized.
   Use trusted publishing (OIDC) in GitHub Actions; never commit registry tokens.
   Keep stable releases on latest and prereleases on next. Existing npm versions
   may only be reused when their integrity exactly matches the verified archive.
+
+## Source layout
+
+Keep shared contracts in src/protocol, browser behavior in src/runtime, React
+integration in src/react, isolated document/gateway code in src/gateway, and
+Node archive tooling in src/packaging. Colocate tests with the implementation.
+Preserve public package export names when reorganizing internals. Consumers must
+resolve public exports instead of assuming a particular dist directory layout.

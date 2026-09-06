@@ -2,7 +2,7 @@ import {
   LIMITS,
   type CompletionReason,
   type PlaybackState,
-} from "./protocol.js";
+} from "../protocol/protocol.js";
 
 /** Pure clock: hidden/paused time is excluded, animation budget is cumulative. */
 export class Playback {

@@ -9,16 +9,16 @@ import {
   type ReactNode,
   type ComponentType,
 } from "react";
-import { AudioScope } from "./audio.js";
+import { AudioScope } from "../runtime/audio.js";
 import { MotionConfig } from "motion/react";
-import { Playback } from "./playback.js";
+import { Playback } from "../runtime/playback.js";
 import type {
   CompletionReason,
   Content,
   Controls,
   RendererPlugin,
   RendererProps,
-} from "./protocol.js";
+} from "../protocol/protocol.js";
 
 class Boundary extends Component<
   { children: ReactNode; fallback: ReactNode; onError: () => void },
