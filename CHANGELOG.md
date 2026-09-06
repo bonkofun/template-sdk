@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Enable public npm distribution and direct installation of `@bonko/template-sdk`.
+- Publish the verified release archive with GitHub Actions trusted publishing.
+- Preserve v3 manifest compatibility (`sdkVersion: "0.2.0"`).
+
 ## 0.2.1
 
 - Reuse the active pnpm CLI during package checks to avoid the older Corepack bundled with Node.js 22.12.0.

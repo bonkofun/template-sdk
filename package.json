@@ -1,7 +1,6 @@
 {
   "name": "@bonko/template-sdk",
-  "version": "0.2.1",
-  "private": true,
+  "version": "0.2.2",
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
@@ -47,5 +46,13 @@
     "vitest": "4.1.11",
     "react": "19.2.8",
     "motion": "13.1.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "homepage": "https://github.com/bonkofun/template-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/bonkofun/template-sdk/issues"
   }
 }

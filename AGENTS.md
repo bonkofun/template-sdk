@@ -19,3 +19,8 @@ Commit only requested changes. Publish releases only when authorized.
   and include the built TGZ plus SHA256SUMS. Never overwrite published SDK assets.
 - Package versions and protocol compatibility identifiers are separate; do not bump
   protocol identifiers automatically for documentation or compatible package changes.
+
+- Publish the verified archive to public npm before creating the GitHub Release.
+  Use trusted publishing (OIDC) in GitHub Actions; never commit registry tokens.
+  Keep stable releases on latest and prereleases on next. Existing npm versions
+  may only be reused when their integrity exactly matches the verified archive.
