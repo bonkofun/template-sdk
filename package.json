@@ -1,0 +1,51 @@
+{
+  "name": "@bonko/template-sdk",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./react": "./dist/react.js",
+    "./node": "./dist/node.js",
+    "./submission": "./dist/submission.js",
+    "./runtime-bundle": "./dist/runtime-bundle.js",
+    "./runtime-messages": "./dist/runtime-messages.js",
+    "./runtime-document": "./dist/runtime-document.js",
+    "./runtime-gateway": "./dist/runtime-gateway.js",
+    "./runtime-host": "./dist/runtime-host.js",
+    "./runtime-client": "./dist/runtime-client.js",
+    "./runtime-react": "./dist/runtime-react.js",
+    "./runtime-assets": "./dist/runtime-assets.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "package:check": "node scripts/check-package.mjs"
+  },
+  "peerDependencies": {
+    "react": "19.2.8",
+    "motion": "13.1.1"
+  },
+  "description": "Shared versioned SDK for Bonko template authoring, validation and isolated browser runtime.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bonkofun/template-sdk.git"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@types/node": "22.13.0",
+    "@types/react": "19.2.18",
+    "typescript": "5.7.3",
+    "vitest": "4.1.11",
+    "react": "19.2.8",
+    "motion": "13.1.1"
+  }
+}
