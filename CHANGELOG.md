@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+
+- Keep the live terminal frame mounted on natural completion, avoiding a loading flash and a second static render.
+- Preserve authored static presentation for preview, skip, and reduced motion; errors retain the readable fallback.
+
 ## 0.2.3
 
 - Organize source and colocated tests into protocol, runtime, React, gateway, and packaging modules.
