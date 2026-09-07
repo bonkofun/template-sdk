@@ -3,7 +3,7 @@
 <p align="center">
   <a href="https://github.com/bonkofun/template-sdk/actions/workflows/ci.yml"><img src="https://github.com/bonkofun/template-sdk/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
   <a href="https://github.com/bonkofun/template-sdk/actions/workflows/release.yml"><img src="https://github.com/bonkofun/template-sdk/actions/workflows/release.yml/badge.svg?event=push" alt="Release status" /></a>
-  <img src="https://img.shields.io/badge/SDK-0.2.3-E8A0B5?style=flat" alt="SDK 0.2.3" />
+  <img src="https://img.shields.io/badge/SDK-0.2.4-E8A0B5?style=flat" alt="SDK 0.2.4" />
   <img src="https://img.shields.io/badge/TypeScript-5.7.3-3178C6?style=flat" alt="TypeScript 5.7.3" />
   <img src="https://img.shields.io/badge/Node.js-22.12.0-339933?style=flat" alt="Node.js 22.12.0" />
 </p>
