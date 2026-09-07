@@ -62,3 +62,10 @@ SDK **0.2.3** supports Template Protocol **v3** with manifest `sdkVersion: "0.2.
 ## License
 
 [MIT](LICENSE) © 2026 Bonko contributors.
+
+### Natural completion
+
+The React RuntimeFrame keeps the live final frame mounted when playback completes
+naturally. It does not hide the iframe or request a second static rendering.
+Templates must settle into a readable result before calling `runtime.complete()`.
+Authored static rendering remains required for previews, skip, and reduced motion.

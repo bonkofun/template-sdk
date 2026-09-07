@@ -98,7 +98,9 @@ export function RuntimeFrame(props: RuntimeFrameProps) {
       ended = true;
       clearTimeout(deadline);
       setView(current => ({ ...current, state: "ended", reason }));
-      if (props.authoredStatic && controller && (controller.ready || controller.staticState) && reason !== "error") {
+      // Natural completion already has a settled frame. Keep it mounted; switching
+      // through the loading placeholder would flash and discard its final state.
+      if (props.authoredStatic && controller && (controller.ready || controller.staticState) && reason !== "error" && reason !== "natural") {
         setFallback(true);
         controller.presentStatic(reason);
         return;
