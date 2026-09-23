@@ -3,6 +3,8 @@ export interface RuntimeDocumentInput {
   script: string;
   stylesheet?: string;
   parentOrigin: string;
+  /** Trusted metadata from a validated cinematic package, never a query parameter. */
+  video?: boolean;
 }
 function parentOrigin(value: string) {
   const url = new URL(value);
@@ -47,7 +49,7 @@ export async function createRuntimeDocument(input: RuntimeDocumentInput) {
     "script-src-attr 'none'",
     "style-src 'unsafe-inline'",
     "img-src blob: data:",
-    "media-src 'none'",
+    input.video ? "media-src blob:" : "media-src 'none'",
     "font-src 'none'",
     "connect-src 'none'",
     "worker-src 'none'",

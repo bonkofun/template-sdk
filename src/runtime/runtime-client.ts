@@ -185,7 +185,7 @@ export function connectStandaloneTemplate(template: StandaloneTemplate) {
           !/^[a-z][a-z0-9-]{0,63}$/.test(id) ||
           !record(asset) ||
           !(asset.bytes instanceof ArrayBuffer) ||
-          !["image/png", "image/jpeg", "image/webp", "image/avif"].includes(
+          !["image/png", "image/jpeg", "image/webp", "image/avif", "video/mp4"].includes(
             String(asset.mime),
           )
         )
@@ -213,6 +213,9 @@ export function connectStandaloneTemplate(template: StandaloneTemplate) {
           audio: {
             play: async (asset) => {
               if (!staticStarted) send({ type: "audio-play", asset });
+            },
+            sync: (asset, positionMs) => {
+              if (!staticStarted) send({ type: "audio-sync", asset, positionMs });
             },
             tone: (frequency, durationMs) => {
               if (!staticStarted) send({ type: "audio-tone", frequency, durationMs });

@@ -10,6 +10,7 @@ function setup() {
     silence: vi.fn(),
     play: vi.fn(async () => {}),
     tone: vi.fn(),
+    sync: vi.fn(async () => {}),
   };
   const post = vi.fn(),
     complete = vi.fn();
@@ -228,4 +229,22 @@ describe("host-authoritative isolated playback", () => {
       type: "dispose",
     });
   });
+});
+
+it('restores a cinematic soundtrack at the current position after host unmute', () => {
+  const s=setup(); s.send({type:'ready'});s.host.start();
+  s.send({type:'audio-sync',asset:'cue',positionMs:1000});
+  expect(s.audio.sync).toHaveBeenLastCalledWith('blob:trusted-audio',1000);
+  s.host.setMuted(true);s.advance(500);s.send({type:'audio-sync',asset:'cue',positionMs:1500});
+  expect(s.audio.sync).toHaveBeenCalledTimes(1);
+  s.advance(250);s.host.setMuted(false);
+  expect(s.audio.sync).toHaveBeenLastCalledWith('blob:trusted-audio',1750);
+  s.host.visibility(false);s.audio.sync.mockClear();s.host.setMuted(false);
+  s.send({type:'audio-sync',asset:'cue',positionMs:2000});expect(s.audio.sync).not.toHaveBeenCalled();
+  s.host.visibility(true);s.advance(2000);s.host.start();s.host.setMuted(false);
+  expect(s.audio.sync).not.toHaveBeenCalled();
+  s.send({type:'audio-sync',asset:'cue',positionMs:1750});
+  expect(s.audio.sync).toHaveBeenLastCalledWith('blob:trusted-audio',1750);
+  s.host.finish('skip');s.audio.sync.mockClear();s.send({type:'audio-sync',asset:'cue',positionMs:2500});
+  expect(s.audio.sync).not.toHaveBeenCalled();
 });

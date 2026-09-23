@@ -1,3 +1,4 @@
+import { inspectSilentMp4 } from "../protocol/media.js";
 import { createHash } from "node:crypto";
 import { inflateRawSync } from "node:zlib";
 import { LIMITS, SDK_VERSION } from "../protocol/protocol.js";
@@ -277,6 +278,7 @@ export function inspectBundle(bytes: Uint8Array, kind: Bundle["kind"]) {
 }
 export function validateMedia(path: string, bytes: Buffer) {
   const ext = path.split(".").pop();
+  if (ext === "mp4") { inspectSilentMp4(bytes); return; }
   const ok =
     ext === "png"
       ? bytes

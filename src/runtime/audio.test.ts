@@ -75,3 +75,26 @@ describe("managed audio", () => {
   });
   it("keeps the visual lifecycle usable when Web Audio is unavailable", () => { vi.stubGlobal("AudioContext",undefined); const audio = new AudioScope(); expect(()=>{audio.unlock();audio.tone(500,100);audio.stop();}).not.toThrow(); });
 });
+
+it("reuses one soundtrack, seeks after mute, and cancels pending playback", async () => {
+  const players: { currentTime: number; paused: boolean; pause: ReturnType<typeof vi.fn> }[] = [];
+  const resolves: (() => void)[] = [];
+  vi.stubGlobal("AudioContext", undefined);
+  vi.stubGlobal("Audio", class {
+    currentTime = 0; paused = true;
+    pause = vi.fn(() => { this.paused = true; });
+    constructor() { players.push(this); }
+    play() { this.paused = false; return new Promise<void>(resolve => resolves.push(resolve)); }
+    removeAttribute() {} load() {}
+  });
+  const audio = new AudioScope();
+  await audio.sync("/score.mp3", 1000); expect(players).toHaveLength(0);
+  audio.unlock(); const first = audio.sync("/score.mp3", 1000);
+  await audio.sync("/score.mp3", 1500); expect(players).toHaveLength(1);
+  expect(players[0].currentTime).toBe(1.5);
+  audio.stop(); resolves[0](); await first;
+  expect(players[0].pause).toHaveBeenCalledTimes(2);
+  audio.unlock(); const second = audio.sync("/score.mp3", 4000);
+  expect(players[1].currentTime).toBe(4); resolves[1](); await second;
+  audio.stop(); await audio.sync("/score.mp3", 5000); expect(players).toHaveLength(2);
+});

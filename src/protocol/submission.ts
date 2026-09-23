@@ -2,6 +2,7 @@ import { LIMITS } from "./protocol.js";
 /** v3 is a standalone runtime package, not a registry renderer registration. */
 export const RUNTIME_PROTOCOL = 3 as const;
 export const RUNTIME_SDK_VERSION = "0.2.0";
+export const CINEMATIC_SDK_VERSION = "0.3.0";
 export const TEMPLATE_CATEGORIES = Object.freeze({
   birthday: "Birthday",
   anniversary: "Anniversary",
@@ -13,14 +14,14 @@ export type TemplateCategory = keyof typeof TEMPLATE_CATEGORIES;
 export type TemplateAccess = "free" | "premium";
 export type RuntimeIntegrity = Record<string, { sha256: string; byteSize: number; contentType: string }>;
 export type RuntimeReference = Pick<TemplateSubmission, "protocol" | "sdkVersion" | "author" | "templateType" | "tags" | "assets" | "capabilities"> & { digest: string; integrity?: RuntimeIntegrity };
-export type SubmissionAsset = { path: string; kind: "image" | "audio" };
+export type SubmissionAsset = { path: string; kind: "image" | "audio" | "video" };
 /** Server-derived metadata keyed by logical asset ID, never accepted in author manifests. */
 export function parseRuntimeIntegrity(assets: Record<string, SubmissionAsset>, input: unknown): RuntimeIntegrity {
   const data = record(input);
   const ids = Object.keys(assets);
   if (Object.keys(data).length !== ids.length || Object.keys(data).some(id => !Object.hasOwn(assets, id))) throw new Error("Runtime integrity asset mismatch");
   const output: RuntimeIntegrity = {};
-  const mime: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", avif: "image/avif", mp3: "audio/mpeg", ogg: "audio/ogg" };
+  const mime: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", avif: "image/avif", mp3: "audio/mpeg", ogg: "audio/ogg", mp4: "video/mp4" };
   let total = 0;
   for (const id of ids) {
     const item = record(data[id]);
@@ -47,7 +48,7 @@ export interface TemplateSubmission {
   assets: Record<string, SubmissionAsset>;
   entry: "runtime/entry.js";
   stylesheet?: "runtime/style.css";
-  capabilities: ("audio" | "canvas" | "webgl")[];
+  capabilities: ("audio" | "canvas" | "webgl" | "video")[];
   config: Record<string, string | number | boolean>;
   sample: { recipientName: string; message: string; senderName: string };
   messagePresets: string[];
@@ -131,7 +132,7 @@ export function parseTemplateSubmission(value: unknown): TemplateSubmission {
     "messagePresets",
     "posterStyle",
   ]);
-  if (m.protocol !== RUNTIME_PROTOCOL || m.sdkVersion !== RUNTIME_SDK_VERSION)
+  if (m.protocol !== RUNTIME_PROTOCOL || ![RUNTIME_SDK_VERSION, CINEMATIC_SDK_VERSION].includes(String(m.sdkVersion)))
     throw new Error("Unsupported runtime protocol or SDK");
   const slug = text(m.slug, 80);
   if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(slug))
@@ -151,8 +152,8 @@ export function parseTemplateSubmission(value: unknown): TemplateSubmission {
     throw new Error("Invalid runtime entry");
   if (
     !Array.isArray(m.capabilities) ||
-    m.capabilities.length > 3 ||
-    m.capabilities.some((c) => !["audio", "canvas", "webgl"].includes(c)) ||
+    m.capabilities.length > 4 ||
+    m.capabilities.some((c) => !["audio", "canvas", "webgl", ...(m.sdkVersion === CINEMATIC_SDK_VERSION ? ["video"] : [])].includes(c)) ||
     new Set(m.capabilities).size !== m.capabilities.length
   )
     throw new Error("Invalid capability declaration");
@@ -174,11 +175,15 @@ export function parseTemplateSubmission(value: unknown): TemplateSubmission {
         ? !/^assets\/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|avif)$/.test(path)
         : asset.kind === "audio"
           ? !/^assets\/[A-Za-z0-9_-]+\.(mp3|ogg)$/.test(path)
-          : true
+          : asset.kind === "video" && m.sdkVersion === CINEMATIC_SDK_VERSION
+            ? !/^assets\/[A-Za-z0-9_-]+\.mp4$/.test(path)
+            : true
     )
       throw new Error("Invalid asset path or kind");
     if (asset.kind === "audio" && !m.capabilities.includes("audio"))
       throw new Error("Audio capability required");
+    if (asset.kind === "video" && (!m.capabilities.includes("video") || m.templateType !== "interactive"))
+      throw new Error("Interactive video capability required");
     assets[id] = { path, kind: asset.kind as SubmissionAsset["kind"] };
   }
   const cover = text(m.cover, 64);
@@ -216,7 +221,7 @@ export function parseTemplateSubmission(value: unknown): TemplateSubmission {
       throw new Error("Invalid poster color");
   return {
     protocol: 3,
-    sdkVersion: RUNTIME_SDK_VERSION,
+    sdkVersion: String(m.sdkVersion),
     slug,
     version,
     name: text(m.name, 80),

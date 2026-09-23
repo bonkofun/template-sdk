@@ -67,3 +67,10 @@ describe("host-owned isolated runtime document", () => {
     ).rejects.toThrow();
   });
 });
+
+it('permits only local blob video for trusted cinematic documents',async()=>{
+  const doc=await createRuntimeDocument({script:'void 0;',parentOrigin:'https://bonko.fun',video:true});
+  expect(doc.headers['Content-Security-Policy']).toContain('media-src blob:');
+  expect(doc.headers['Content-Security-Policy']).toContain("connect-src 'none'");
+  expect(doc.headers['Permissions-Policy']).toContain('autoplay=()');
+});

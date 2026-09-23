@@ -14,6 +14,9 @@ export const LIMITS = Object.freeze({
   imageDimension: 4096,
   imagePixels: 16_777_216,
   audioSeconds: 10,
+  cinematicSeconds: 30,
+  videoDimension: 1920,
+  videoPixels: 2_073_600,
 });
 export type CompletionReason =
   | "natural"
@@ -49,6 +52,8 @@ export interface Controls {
   asset: (id: string) => string;
   audio: {
     play: (id: string) => Promise<void>;
+    /** Synchronize one host-owned soundtrack to a visual clock (milliseconds). */
+    sync?: (id: string, positionMs: number) => void;
     tone: (frequency: number, durationMs: number) => void;
     stop: () => void;
   };
