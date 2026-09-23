@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (local candidate)
+## 0.3.0
 
 - Add opt-in cinematic contract 0.3.0 alongside existing 0.2.0 on protocol v3.
 - Validate silent H.264 MP4 container metadata within 30 seconds and 1920px / 2,073,600 pixels.

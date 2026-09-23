@@ -70,7 +70,7 @@ naturally. It does not hide the iframe or request a second static rendering.
 Templates must settle into a readable result before calling `runtime.complete()`.
 Authored static rendering remains required for previews, skip, and reduced motion.
 
-## Cinematic contract (0.3.0 candidate)
+## Cinematic contract (0.3.0)
 
 Package 0.3.0 accepts both manifest SDK contracts 0.2.0 and 0.3.0 with protocol 3.
 Opt into `sdkVersion: "0.3.0"` and capability `video` for flat `assets/*.mp4` files.
@@ -88,4 +88,4 @@ The runtime gateway enables blob media only for a trusted stored document whose
 `video` flag was derived from the validated manifest. Remote media stays blocked.
 
 Roll out the SDK, CLI, Admin, main-site host and runtime Worker together before
-publishing cinematic inventory. This candidate does not itself deploy consumers.
+publishing cinematic inventory. Installing this package does not deploy consumers.
