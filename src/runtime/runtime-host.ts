@@ -10,7 +10,7 @@ export interface RuntimeHostOptions {
   /** Exact contentWindow object, never an origin-only check. */
   source: object;
   post: (message: HostEnvelope) => void;
-  audio: Pick<AudioScope, "unlock" | "stop" | "silence" | "play" | "tone">;
+  audio: Pick<AudioScope, "unlock" | "stop" | "silence" | "play" | "tone"> & Partial<Pick<AudioScope, "sync">>;
   audioAssets: Readonly<Record<string, string>>;
   hasSound: boolean;
   muted: boolean;
@@ -30,6 +30,7 @@ export class RuntimeHost {
   private staticStartedAt = 0;
   private disposed = false;
   private delivered = false;
+  private soundtrack?: { asset: string; positionMs: number; at: number };
   private requestedStart = false;
   private visible = true;
   private readonly loadedAt: number;
@@ -41,10 +42,18 @@ export class RuntimeHost {
     this.gate = new RuntimeMessageGate(options.channel, this.clock);
     this.player = new Playback(() => this.changed(), this.clock);
   }
+  private syncSoundtrack() {
+    const track = this.soundtrack;
+    if (!track || this.muted || !this.visible || !["running", "waiting"].includes(this.player.state)) return;
+    const position = Math.min(30000, track.positionMs + this.clock() - track.at);
+    void this.options.audio.sync?.(this.options.audioAssets[track.asset], position);
+  }
   private changed() {
     if (this.disposed) return;
-    if (this.player.state === "paused" || this.player.state === "ended")
+    if (this.player.state === "paused" || this.player.state === "ended") {
+      this.soundtrack = undefined;
       this.options.audio.stop();
+    }
     if (!this.staticState) this.options.post({
       protocol: 3,
       channel: this.options.channel,
@@ -83,6 +92,7 @@ export class RuntimeHost {
     if (this.muted) this.options.audio.stop();
     else if (this.visible && ["running", "waiting"].includes(this.player.state))
       this.options.audio.unlock();
+    this.syncSoundtrack();
     this.options.changed(this);
   }
   finish(reason: Exclude<CompletionReason, "natural">) {
@@ -156,6 +166,7 @@ export class RuntimeHost {
       return;
     }
     if (message.type === "audio-stop") {
+      this.soundtrack = undefined;
       this.options.audio.silence();
       return;
     }
@@ -173,6 +184,12 @@ export class RuntimeHost {
         break;
       case "complete":
         this.player.complete();
+        break;
+      case "audio-sync":
+        if (Object.hasOwn(this.options.audioAssets, message.asset)) {
+          this.soundtrack = { asset: message.asset, positionMs: message.positionMs, at: this.clock() };
+          this.syncSoundtrack();
+        }
         break;
       case "audio-play":
         if (

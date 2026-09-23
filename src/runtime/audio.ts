@@ -4,6 +4,7 @@ export class AudioScope {
   private players = new Set<HTMLAudioElement>();
   private nodes = new Map<OscillatorNode, GainNode>();
   private enabled = false;
+  private soundtrack?: { url: string; player: HTMLAudioElement };
   private epoch = 0;
   unlock() {
     this.enabled = true;
@@ -25,6 +26,7 @@ export class AudioScope {
       player.load();
     }
     this.players.clear();
+    this.soundtrack = undefined;
     for (const [node, gain] of this.nodes) {
       node.onended = null;
       try {
@@ -62,6 +64,25 @@ export class AudioScope {
     } catch {
       this.players.delete(player);
     }
+  }
+  /** One continuous soundtrack; repeated clock updates never layer players. */
+  async sync(url: string, positionMs: number) {
+    if (!this.enabled || !Number.isFinite(positionMs) || positionMs < 0 || positionMs >= 30000 || typeof Audio === "undefined") return;
+    if (this.soundtrack?.url !== url) {
+      this.silence();
+      const player = new Audio(url);
+      this.soundtrack = { url, player };
+      this.players.add(player);
+    }
+    const player = this.soundtrack.player;
+    const epoch = this.epoch;
+    const seconds = positionMs / 1000;
+    try {
+      if (Math.abs(player.currentTime - seconds) > .35 || player.paused) player.currentTime = seconds;
+      if (!player.paused) return;
+      await player.play();
+      if (epoch !== this.epoch || !this.enabled) player.pause();
+    } catch { /* A denied soundtrack never blocks the visual experience. */ }
   }
   tone(frequency: number, durationMs: number) {
     if (

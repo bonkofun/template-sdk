@@ -17,6 +17,7 @@ export type FrameRequest =
   | { type: "complete" }
   | { type: "error" }
   | { type: "audio-play"; asset: string }
+  | { type: "audio-sync"; asset: string; positionMs: number }
   | { type: "audio-tone"; frequency: number; durationMs: number }
   | { type: "audio-stop" };
 export type FrameEnvelope = FrameRequest & {
@@ -66,6 +67,10 @@ export function parseFrameEnvelope(input: unknown): FrameEnvelope | undefined {
       if (m.mode !== "running" && m.mode !== "waiting") return;
       extra.push("mode");
       break;
+    case "audio-sync":
+      if (typeof m.positionMs !== "number" || !Number.isFinite(m.positionMs) || m.positionMs < 0 || m.positionMs > 30000) return;
+      extra.push("positionMs");
+      // Asset IDs still pass the same validation as short cues.
     case "audio-play":
       if (
         typeof m.asset !== "string" ||

@@ -76,7 +76,7 @@ export async function loadRuntimeAssets(input: RuntimeAssetLoad, signal: AbortSi
   if (entries.length > 100) throw new Error("Too many runtime assets");
   let total = 0;
   const sources = entries.map(([id, source]) => {
-    if (!/^[a-z][a-z0-9-]{0,63}$/.test(id) || (!images.has(source.mime) && !audio.has(source.mime)) ||
+    if (!/^[a-z][a-z0-9-]{0,63}$/.test(id) || (!images.has(source.mime) && !audio.has(source.mime) && source.mime !== "video/mp4") ||
       !Number.isSafeInteger(source.byteSize) || source.byteSize < 1 || !/^[a-f0-9]{64}$/.test(source.sha256)) throw new Error("Invalid runtime asset descriptor");
     total += source.byteSize;
     return { ...source, id, url: trustedUrl(source.url, input.allowedOrigins) };
@@ -108,7 +108,7 @@ export async function loadRuntimeAssets(input: RuntimeAssetLoad, signal: AbortSi
     const imageAssets: RuntimeFrameData["images"] = Object.create(null);
     const audioAssets: RuntimeFrameData["audio"] = Object.create(null);
     for (const resource of results) {
-      if (images.has(resource.mime)) imageAssets[resource.id] = { bytes: resource.bytes, mime: resource.mime };
+      if (images.has(resource.mime) || resource.mime === "video/mp4") imageAssets[resource.id] = { bytes: resource.bytes, mime: resource.mime };
       else if (input.hasSound) {
         const url = URL.createObjectURL(new Blob([resource.bytes], { type: resource.mime }));
         urls.push(url);

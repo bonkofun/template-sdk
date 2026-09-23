@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Add opt-in cinematic contract 0.3.0 alongside existing 0.2.0 on protocol v3.
+- Validate silent H.264 MP4 container metadata within 30 seconds and 1920px / 2,073,600 pixels.
+- Transfer verified video bytes into isolated blob media; enable blob media CSP only on trusted cinematic documents.
+- Synchronize continuous soundtracks through host-owned audio, including unmute and lifecycle cleanup.
+- Keep the package budget at 10 MiB compressed / 25 MiB expanded.
+
 ## 0.2.4
 
 - Keep the live terminal frame mounted on natural completion, avoiding a loading flash and a second static render.

@@ -69,3 +69,23 @@ The React RuntimeFrame keeps the live final frame mounted when playback complete
 naturally. It does not hide the iframe or request a second static rendering.
 Templates must settle into a readable result before calling `runtime.complete()`.
 Authored static rendering remains required for previews, skip, and reduced motion.
+
+## Cinematic contract (0.3.0)
+
+Package 0.3.0 accepts both manifest SDK contracts 0.2.0 and 0.3.0 with protocol 3.
+Opt into `sdkVersion: "0.3.0"` and capability `video` for flat `assets/*.mp4` files.
+Supported movies have exactly one silent H.264 track, at most 30 seconds, a
+1920px maximum edge, 2,073,600 pixels and 60fps. The shared parser validates
+bounded container/sample metadata; browser playback checks remain necessary.
+Audio stays separate (MP3/OGG, up to 30 seconds for this contract). Existing
+0.2.0 templates retain the ten-second audio limit and cannot declare videos.
+
+Use `runtime.asset(id)` for the muted, inline video and
+`runtime.audio.sync?.(audioId, positionMs)` for its soundtrack. Report the current
+clock regularly; the host owns permission, mute, pause, backgrounding and replay.
+Stop media and frame callbacks on pause/dispose; provide a complete static entry.
+The runtime gateway enables blob media only for a trusted stored document whose
+`video` flag was derived from the validated manifest. Remote media stays blocked.
+
+Roll out the SDK, CLI, Admin, main-site host and runtime Worker together before
+publishing cinematic inventory. Installing this package does not deploy consumers.

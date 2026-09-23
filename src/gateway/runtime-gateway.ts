@@ -148,13 +148,15 @@ export async function serveRuntimeDocument(
       !("script" in content) ||
       typeof content.script !== "string" ||
       ("stylesheet" in content && typeof content.stylesheet !== "string") ||
+      ("video" in content && typeof content.video !== "boolean") ||
       Object.keys(content).some(
-        (key) => !["script", "stylesheet"].includes(key),
+        (key) => !["script", "stylesheet", "video"].includes(key),
       )
     )
       return unavailable(503);
     const document = await createRuntimeDocument({
       script: content.script,
+      video: "video" in content && content.video === true,
       stylesheet:
         "stylesheet" in content ? (content.stylesheet as string) : undefined,
       parentOrigin: parent,

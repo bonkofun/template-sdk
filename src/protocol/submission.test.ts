@@ -174,3 +174,10 @@ describe("standalone runtime package contract", () => {
     ).toThrow();
   });
 });
+it('requires the cinematic contract and capability for video, retaining older manifests', () => {
+  const movie={...manifest(),sdkVersion:'0.3.0',capabilities:['audio','video'],assets:{...manifest().assets,film:{kind:'video',path:'assets/film.mp4'}}};
+  expect(parseTemplateSubmission(movie).sdkVersion).toBe('0.3.0');
+  expect(parseTemplateSubmission(manifest()).sdkVersion).toBe('0.2.0');
+  expect(()=>parseTemplateSubmission({...movie,sdkVersion:'0.2.0'})).toThrow();
+  expect(()=>parseTemplateSubmission({...movie,capabilities:['audio']})).toThrow();
+});
